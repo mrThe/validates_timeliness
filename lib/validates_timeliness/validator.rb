@@ -42,10 +42,16 @@ module ValidatesTimeliness
       end
 
       @restrictions_to_check = RESTRICTIONS.keys & options.keys
+      undef :setup if respond_to?(:deprecated_setup, true)
       super
+      setup_timeliness_validated_attributes options[:class] if options.key?(:class)
     end
 
     def setup(model)
+      setup_timeliness_validated_attributes model
+    end
+
+    def setup_timeliness_validated_attributes(model)
       if model.respond_to?(:timeliness_validated_attributes)
         model.timeliness_validated_attributes ||= []
         model.timeliness_validated_attributes |= @attributes
